@@ -38,7 +38,7 @@ const REELSET = [
 ];
 
 // Loading fake loop count (to simulate loading time)
-const USE_FAKE_LOADER = false;
+const USE_FAKE_LOADER = true;
 const FAKE_LOADER_LOOP_COUNT = 50000000;
 
 // Texts
