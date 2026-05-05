@@ -108,6 +108,13 @@ function updateDisplayReels(positions) {
 function resize() {
     container.x = app.screen.width / 2;
     container.y = app.screen.height / 2;
+
+    const scaleX = app.screen.width / DESIGN_WIDTH;
+    const scaleY = app.screen.height / DESIGN_HEIGHT;
+    const scale = Math.min(scaleX, scaleY);
+
+    container.scale.set(scale);
+
     console.log("Screen resized:", app.screen.width, app.screen.height);
 }
 
