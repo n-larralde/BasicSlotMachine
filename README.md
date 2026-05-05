@@ -4,7 +4,7 @@ A basic slot machine game built in JavaScript using PixiJS and ES6. It features 
 Work splitted into 6 steps:
 - Step 1: Project html basic template withouth pixi
 - Step 2: Pixi integration + html rework
-- Step 2: Images preload (loader screen)
-- Step 3: Data
-- Step 4: Images display
-- Step 5: Game core logic (initial position, random selection, winning calculations)
+- Step 3: Images preload (loader screen)
+- Step 4: Data
+- Step 5: Images display
+- Step 6: Game core logic (initial position, random selection, winning calculations)
