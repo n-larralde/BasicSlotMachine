@@ -28,6 +28,10 @@ const REELSET = [
     ["hv2", "lv2", "hv3", "lv2", "lv4", "lv4", "hv3", "lv2", "lv4", "hv1", "lv1", "hv1", "lv2", "hv3", "lv2", "lv3", "hv2", "lv1", "hv3", "lv2"],
     ["lv3", "lv4", "hv2", "hv3", "hv4", "hv1", "hv3", "hv2", "hv2", "hv4", "hv4", "hv2", "lv2", "hv4", "hv1", "lv2", "hv1", "lv2", "hv4", "lv4"]];
 
+// Spins
+const SPINS = [0, 0, 0, 0, 0];
+//const SPINS = [18, 9, 2, 0, 12];
+
 // Loading fake loop count (to simulate loading time)
 const USE_FAKE_LOADER = false;
 const FAKE_LOADER_LOOP_COUNT = 50000000;
@@ -44,6 +48,9 @@ const LOADING_TEXT_FONT_SIZE = 40;
 const SPIN_BUTTON_TEXT = "Spin";
 const SPIN_BUTTON_TEXT_COLOR = "black";
 const SPIN_BUTTON_TEXT_FONT_SIZE = 20;
+const SPIN_BUTTON_WIDTH = 100;
+const SPIN_BUTTON_HEIGHT = 50;
+const SPIN_BUTTON_FILL_COLOR = "lightgray";
 
 const WIN_TEXT = "You Win!";
 const WIN_TEXT_COLOR = "green";
