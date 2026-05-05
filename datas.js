@@ -8,6 +8,10 @@ const ROWS = 3;
 const REEL_SIZE = 125;
 let NB_WINS = 0;
 
+// Screen
+const DESIGN_WIDTH = 500;
+const DESIGN_HEIGHT = 800;
+
 // Spins = CHANGE VALUES HERE TO TEST DIRECTLY THE WIN CONDITIONS
 const SPINS = [5, 14, 9, 9, 16]; // Initial spins (can be randomized)
 
