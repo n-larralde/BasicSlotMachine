@@ -6,4 +6,5 @@ Work splitted into 6 steps:
 - Step 2: Pixi integration + html rework
 - Step 3: Images preload (loader screen)
 - Step 4: Datas
-- Step 5: Game core logic (initial position, random selection, winning calculations)
+- Step 5: Game core logic (random selection)
+- Step 6: Game core logic (winning conditions)
