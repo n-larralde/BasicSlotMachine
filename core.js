@@ -1,6 +1,7 @@
 // *********************
-// ***** CORE *****
+// ******* CORE *******
 // *********************
+
 const app = new PIXI.Application({
     resizeTo: window,
     backgroundColor: 0xFFFFFF
@@ -22,42 +23,29 @@ resize();
 app.renderer.on("resize", resize);
 
 // Loading Text
-const loadingText = new PIXI.Text("Loading...", {
-    fill: "black",
-    fontSize: 40
-});
-loadingText.x = -loadingText.width / 2;
-uiContainer.addChild(loadingText);
+const loadingText =addText(LOADING_TEXT, LOADING_TEXT_COLOR, LOADING_TEXT_FONT_SIZE, 0, 0);
 
 // Assets Loading
-PIXI.Assets.addBundle("game-symbols", {
-    hv1_symbol: "https://raw.githubusercontent.com/n-larralde/BasicSlotMachine/refs/heads/main/assets/hv1_symbol.png",
-    hv2_symbol: "https://raw.githubusercontent.com/n-larralde/BasicSlotMachine/refs/heads/main/assets/hv2_symbol.png",
-    hv3_symbol: "https://raw.githubusercontent.com/n-larralde/BasicSlotMachine/refs/heads/main/assets/hv3_symbol.png",
-    hv4_symbol: "https://raw.githubusercontent.com/n-larralde/BasicSlotMachine/refs/heads/main/assets/hv4_symbol.png",
-    lv1_symbol: "https://raw.githubusercontent.com/n-larralde/BasicSlotMachine/refs/heads/main/assets/lv1_symbol.png",
-    lv2_symbol: "https://raw.githubusercontent.com/n-larralde/BasicSlotMachine/refs/heads/main/assets/lv2_symbol.png",
-    lv3_symbol: "https://raw.githubusercontent.com/n-larralde/BasicSlotMachine/refs/heads/main/assets/lv3_symbol.png",
-    lv4_symbol: "https://raw.githubusercontent.com/n-larralde/BasicSlotMachine/refs/heads/main/assets/lv4_symbol.png",
-    spin_button: "https://raw.githubusercontent.com/n-larralde/BasicSlotMachine/refs/heads/main/assets/spin_button.png"
-});
+PIXI.Assets.addBundle("game-symbols", ASSETS);
 
 const textures = [];
 const reelTable = [];
 
-// Launch Init
 init();
 
 // *********************
 // ***** FUNCTIONS *****
 // *********************
 
-// ***** ASYNC *****
+// ******* ASYNC *******
+
 async function init() {
     const textures = await PIXI.Assets.loadBundle("game-symbols", (progress) => {
         loadingText.text = `Loading... ${Math.round(progress * 100)}%`;
-        for(let t = 0; t < 100000000; t++){
-            Math.random();
+        if(USE_FAKE_LOADER){
+            for(let t = 0; t < FAKE_LOADER_LOOP_COUNT; t++){
+                Math.random();
+            }
         }
     });
 
@@ -65,44 +53,40 @@ async function init() {
 
     loadingText.destroy();
 
-    // Slot Machine Text
-    const slotMachineText = new PIXI.Text("Basic Slot Machine", {
-        fill: "black",
-        fontSize: 40
-    });
-    slotMachineText.x = -slotMachineText.width / 2;
-    slotMachineText.y = -250;
-    uiContainer.addChild(slotMachineText);
+    displayReels(textures, [0, 0, 0, 0, 0]);
 
-    initReels(textures);
+    addText(MAIN_TITLE, MAIN_TITLE_COLOR, MAIN_TITLE_FONT_SIZE, 0, -300);
 }
 
-// ***** SYNC *****
 function delay(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-function initReels(textures) {
-    const COLS = 5;
-    const ROWS = 3;
-    const REEL_SIZE = 125;
+// ******* SYNC *******
 
+function displayReels(textures, positions) {
     const offsetX = -(COLS * REEL_SIZE) / 2;
     const offsetY = -(ROWS * REEL_SIZE) / 2;
+    let tempPositions = positions;
 
     for (let c = 0; c < COLS; c++) {
+        
         const col = [];
 
         for (let r = 0; r < ROWS; r++){
-            const sprite = new PIXI.Sprite(textures["hv1_symbol"]);
+            console.log(tempPositions);
+
+            const sprite = new PIXI.Sprite(textures[REELSET[tempPositions[c]][r]]);
             sprite.width = REEL_SIZE;
             sprite.height = REEL_SIZE;
             sprite.x = offsetX + c * REEL_SIZE;
             sprite.y = offsetY + r * REEL_SIZE;
-            col.push(sprite);
             reelsContainer.addChild(sprite);
+            col.push(sprite);
         }
 
+        tempPositions = tempPositions.map(pos => (pos + 1) % REELSET[c].length);
+        
         reelTable.push(col);
     }
 
@@ -114,4 +98,17 @@ function resize() {
     container.y = app.screen.height / 2;
 
     console.log("Screen resized:", app.screen.width, app.screen.height);
+}
+
+function addText(text, color, fontSize, positionX, positionY) {
+    const pixiText = new PIXI.Text(text, {
+        fill: color,
+        fontSize: fontSize
+    });
+
+    pixiText.x = positionX == 0 ? -pixiText.width / 2 : positionX;
+    pixiText.y = positionY;
+    uiContainer.addChild(pixiText);
+    
+    return pixiText;
 }
