@@ -1,3 +1,6 @@
+// *********************
+// ***** CORE *****
+// *********************
 const app = new PIXI.Application({
     resizeTo: window,
     backgroundColor: 0xFFFFFF
@@ -5,53 +8,79 @@ const app = new PIXI.Application({
 
 document.body.appendChild(app.view);
 
+// Containers
 const container = new PIXI.Container();
 const uiContainer  = new PIXI.Container();
 const reelsContainer = new PIXI.Container();
 
-container.addChild(uiContainer );
 container.addChild(reelsContainer);
+container.addChild(uiContainer );
 app.stage.addChild(container);
 
+// Resize handling
 resize();
 app.renderer.on("resize", resize);
 
-const text = new PIXI.Text("Basic Slot Machine", {
+// Loading Text
+const loadingText = new PIXI.Text("Loading...", {
     fill: "black",
     fontSize: 40
 });
-text.x = -text.width / 2;
-text.y = -250;
+loadingText.x = -loadingText.width / 2;
+uiContainer.addChild(loadingText);
 
-uiContainer.addChild(text);
+// Assets Loading
+PIXI.Assets.addBundle("game-symbols", {
+    hv1_symbol: "https://raw.githubusercontent.com/n-larralde/BasicSlotMachine/refs/heads/main/assets/hv1_symbol.png",
+    hv2_symbol: "https://raw.githubusercontent.com/n-larralde/BasicSlotMachine/refs/heads/main/assets/hv2_symbol.png",
+    hv3_symbol: "https://raw.githubusercontent.com/n-larralde/BasicSlotMachine/refs/heads/main/assets/hv3_symbol.png",
+    hv4_symbol: "https://raw.githubusercontent.com/n-larralde/BasicSlotMachine/refs/heads/main/assets/hv4_symbol.png",
+    lv1_symbol: "https://raw.githubusercontent.com/n-larralde/BasicSlotMachine/refs/heads/main/assets/lv1_symbol.png",
+    lv2_symbol: "https://raw.githubusercontent.com/n-larralde/BasicSlotMachine/refs/heads/main/assets/lv2_symbol.png",
+    lv3_symbol: "https://raw.githubusercontent.com/n-larralde/BasicSlotMachine/refs/heads/main/assets/lv3_symbol.png",
+    lv4_symbol: "https://raw.githubusercontent.com/n-larralde/BasicSlotMachine/refs/heads/main/assets/lv4_symbol.png",
+    spin_button: "https://raw.githubusercontent.com/n-larralde/BasicSlotMachine/refs/heads/main/assets/spin_button.png"
+});
 
+const textures = [];
 const reelTable = [];
+
+// Launch Init
 init();
 
+// *********************
 // ***** FUNCTIONS *****
+// *********************
 
 // ***** ASYNC *****
 async function init() {
-    const reelSymbols = ["hv1_symbol", "hv2_symbol", "hv3_symbol", "hv4_symbol", "lv1_symbol", "lv2_symbol", "lv3_symbol", "lv4_symbol", "spin_button"];
-    const textures = await loadAssets(reelSymbols);
+    const textures = await PIXI.Assets.loadBundle("game-symbols", (progress) => {
+        loadingText.text = `Loading... ${Math.round(progress * 100)}%`;
+        for(let t = 0; t < 100000000; t++){
+            Math.random();
+        }
+    });
+
+    console.log("All Assets loaded");
+
+    loadingText.destroy();
+
+    // Slot Machine Text
+    const slotMachineText = new PIXI.Text("Basic Slot Machine", {
+        fill: "black",
+        fontSize: 40
+    });
+    slotMachineText.x = -slotMachineText.width / 2;
+    slotMachineText.y = -250;
+    uiContainer.addChild(slotMachineText);
+
     initReels(textures);
 }
 
-async function loadAssets(symbols){
-    const textures = {};
-
-    for (let symbol of symbols) {
-        const texture = await PIXI.Assets.load(
-            `https://raw.githubusercontent.com/n-larralde/BasicSlotMachine/refs/heads/main/assets/${symbol}.png`
-        );
-        textures[symbol] = texture;
-    }
-
-    console.log("Assets loaded");
-    return textures;
-}
-
 // ***** SYNC *****
+function delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
 
 function initReels(textures) {
     const COLS = 5;
@@ -76,9 +105,13 @@ function initReels(textures) {
 
         reelTable.push(col);
     }
+
+    console.log("Reels initialized");
 }
 
 function resize() {
     container.x = app.screen.width / 2;
     container.y = app.screen.height / 2;
+
+    console.log("Screen resized:", app.screen.width, app.screen.height);
 }
