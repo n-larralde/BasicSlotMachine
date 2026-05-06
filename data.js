@@ -6,14 +6,16 @@
 const COLS = 5;
 const ROWS = 3;
 const REEL_SIZE = 125;
-let NB_WINS = 0;
+
+const OFFSET_X = -(COLS * REEL_SIZE) / 2;
+const OFFSET_Y = -(ROWS * REEL_SIZE) / 2;
 
 // Screen
-const DESIGN_WIDTH = 500;
+const DESIGN_WIDTH = 800;
 const DESIGN_HEIGHT = 800;
 
 // Spins = CHANGE VALUES HERE TO TEST DIRECTLY THE WIN CONDITIONS
-const SPINS = [5, 14, 9, 9, 16]; // Initial spins (can be randomized)
+let SPINS = [5, 14, 9, 9, 16]; // Initial spins (can be randomized)
 
 // Assets URLs
 const ASSETS = Object.freeze({
@@ -39,28 +41,36 @@ const REELSET = [
 
 // Loading fake loop count (to simulate loading time)
 const USE_FAKE_LOADER = true;
-const FAKE_LOADER_LOOP_COUNT = 50000000;
+const FAKE_LOADER_TIMER = 1000;
 
 // Texts
 const MAIN_TITLE = "Basic Slot Machine";
 const MAIN_TITLE_COLOR = "black";
 const MAIN_TITLE_FONT_SIZE = 40;
 
-const LOADING_TEXT = "Loading... 0%";
+const LOADING_TEXT = "Loading...";
 const LOADING_TEXT_COLOR = "black";
 const LOADING_TEXT_FONT_SIZE = 40;  
 
 const SPIN_BUTTON_TEXT = "Spin";
 const SPIN_BUTTON_TEXT_COLOR = "black";
 const SPIN_BUTTON_TEXT_FONT_SIZE = 20;
-const SPIN_BUTTON_WIDTH = 100;
-const SPIN_BUTTON_HEIGHT = 50;
-const SPIN_BUTTON_FILL_COLOR = "lightgray";
+
+const ASSETS_LOADED_TEXT = "All Assets loaded";
+const REELS_INITIALIZED_TEXT = "Reels initialized";
+const SCREEN_RESIZED_TEXT = "Screen resized:";
+const ERROR_LOADING_ASSETS_TEXT = "Error loading assets! Refresh to try again.";
+
+// Buttons
+const BUTTON_WIDTH = 100;
+const BUTTON_HEIGHT = 50;
+const BUTTON_FILL_COLOR = "lightgray";
 
 // Win Parameters
 const WIN_TEXT = "Total wins: ";
 const WIN_TEXT_COLOR = "green";
 const WIN_TEXT_FONT_SIZE = 20;
+const PAYLINE_TEXT = "- payline";
 
 // [3 of a kind, 4 of a kind, 5 of a kind]
 const PAYTABLE = { 
