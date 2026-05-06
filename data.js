@@ -5,7 +5,7 @@
 // Spins = CHANGE VALUES HERE to test win conditions directly
 let SPINS = [0, 0, 0, 0, 0]; // Initial spins positions
 
-const RUNT_UNIT_TESTS = false; // Set to true to run unit tests on win conditions
+const RUN_UNIT_TESTS = false; // Set to true to run unit tests on win conditions
 
 // Debug
 const DEBUG = false; // Set to true to enable debug logs and fake loader timeout
@@ -22,7 +22,7 @@ const OFFSET_Y = -(ROWS * REEL_SIZE) / 2;
 const DESIGN_WIDTH = 800;
 const DESIGN_HEIGHT = 800;
 
-// Assets URLs
+// Assets from Github Raw URLs to avoid CORS issues (for assignment purposes, in production these should be hosted properly)
 const ASSETS = Object.freeze({
     lv1: "https://raw.githubusercontent.com/n-larralde/BasicSlotMachine/refs/heads/main/assets/lv1_symbol.png",
     lv2: "https://raw.githubusercontent.com/n-larralde/BasicSlotMachine/refs/heads/main/assets/lv2_symbol.png",
@@ -44,7 +44,7 @@ const REELSET = [
     ["lv3", "lv4", "hv2", "hv3", "hv4", "hv1", "hv3", "hv2", "hv2", "hv4", "hv4", "hv2", "lv2", "hv4", "hv1", "lv2", "hv1", "lv2", "hv4", "lv4"]
 ];
 
-// Loading fake loop count (to simulate loading time after assets are loaded))
+// Loading fake loop count (to simulate loading time after assets are loaded)
 const USE_FAKE_LOADER = DEBUG;
 const FAKE_LOADER_TIMER = 1000;
 

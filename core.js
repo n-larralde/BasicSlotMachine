@@ -27,7 +27,6 @@ app.renderer.on("resize", resize);
 // Texts
 const loadingText = addText(LOADING_TEXT, LOADING_TEXT_COLOR, LOADING_TEXT_FONT_SIZE, 0, 0);
 let winText = null;
-let paylineText = null;
 
 // Assets Loading
 PIXI.Assets.addBundle("game-symbols", ASSETS);
@@ -62,13 +61,12 @@ async function init() {
     loadingText.destroy();
 
     winText = addText("", WIN_TEXT_COLOR, WIN_TEXT_FONT_SIZE, 0, 285);
-    paylineText = addText("", WIN_TEXT_COLOR, WIN_TEXT_FONT_SIZE, 0, 290);
 
     initButtons();
     updateDisplayReels(SPINS);
     checkWinConditions();
 
-    if (RUNT_UNIT_TESTS) {
+    if (RUN_UNIT_TESTS) {
         const script = document.createElement("script");
         script.src = "test.js";
         document.body.appendChild(script);
@@ -228,21 +226,18 @@ function checkWinCombination(symbols, paylineId) {
 
 function updateWinTexts(wins) {
     const totalPayout = wins.reduce((total, win) => total + win.payout, 0);
-
-    updateText(winText, `${WIN_TEXT}${totalPayout}`);
-    updateText(paylineText, "");
-
-    wins.forEach((win, index) => {
-        updateText(paylineText, paylineText.text + `${PAYLINE_TEXT} ${win.paylineId}, ${win.symbol} x${win.count}, ${win.payout}`);
+    let fullText = `${WIN_TEXT}${totalPayout}`;
+    wins.forEach(win => {
+        fullText += `${PAYLINE_TEXT} ${win.paylineId}, ${win.symbol} x${win.count}, ${win.payout}`;
     });
+    updateText(winText, fullText);
 
-    // Scale to fit available space
-    const availableHeight = (DESIGN_HEIGHT / 2) - paylineText.y;
-    if (paylineText.height > availableHeight) {
-        const scale = availableHeight / paylineText.height;
-        paylineText.scale.set(scale);
+    const availableHeight = (DESIGN_HEIGHT / 2) - winText.y;
+    if (winText.height > availableHeight) {
+        const scale = availableHeight / winText.height;
+        winText.scale.set(scale);
     }
     else {
-        paylineText.scale.set(1);
+        winText.scale.set(1);
     }
 }
