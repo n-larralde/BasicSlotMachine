@@ -10,5 +10,5 @@ Work split into 6 steps:
 - Step 6: Game core logic (winning conditions)
 
 ## Testing
-Set `RUNT_UNIT_TESTS = true` in data.js and open the browser console to see test results.
+Set `RUN_UNIT_TESTS = true` in data.js and open the browser console to see test results.
 Set `SPINS` in data.js directly to select your own default SPINS
