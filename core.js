@@ -26,8 +26,8 @@ app.renderer.on("resize", resize);
 
 // Texts
 const loadingText = addText(LOADING_TEXT, LOADING_TEXT_COLOR, LOADING_TEXT_FONT_SIZE, 0, 0);
-const winText = addText("", WIN_TEXT_COLOR, WIN_TEXT_FONT_SIZE, 0, 275);
-const paylineText = addText("", WIN_TEXT_COLOR, WIN_TEXT_FONT_SIZE, 0, 285);
+let winText = null;
+let paylineText = null;
 
 // Assets Loading
 PIXI.Assets.addBundle("game-symbols", ASSETS);
@@ -47,7 +47,7 @@ async function init() {
     try {
         textures = await PIXI.Assets.loadBundle("game-symbols", (progress) => {
             updateText(loadingText, LOADING_TEXT + `${Math.round(progress * 100)}%`);
-        }),
+        });
 
         await new Promise(resolve => setTimeout(resolve, USE_FAKE_LOADER? FAKE_LOADER_TIMER : 0));
     }
@@ -60,6 +60,9 @@ async function init() {
     console.log(ASSETS_LOADED_TEXT);
 
     loadingText.destroy();
+
+    winText = addText("", WIN_TEXT_COLOR, WIN_TEXT_FONT_SIZE, 0, 275);
+    paylineText = addText("", WIN_TEXT_COLOR, WIN_TEXT_FONT_SIZE, 0, 285);
 
     initButtons();
     updateDisplayReels(SPINS);
@@ -124,7 +127,7 @@ function addText(text, color, fontSize, positionX, positionY, centered = true) {
         fontSize: fontSize
     });
 
-    pixiText.x = centered ? -pixiText.width / 2 : positionX;
+    pixiText.x = centered ? -pixiText.width / 2 + positionX : positionX;
     pixiText.y = positionY;
     uiContainer.addChild(pixiText);
     
@@ -161,21 +164,21 @@ function addButton(columnIndex, text, positionX = 0, positionY = 0) {
 
     // Events
     button.on('pointerdown', () => {
-        button.tint = 0x2980b9; // Visual feedback for click
+        button.tint = BUTTON_TINT_CLICK; // Visual feedback for click
         randomizeReels(columnIndex);
         checkWinConditions();
 
         setTimeout(() => {
-            button.tint = 0xffffff; // Reset after click
+            button.tint = BUTTON_TINT_DEFAULT; // Reset after click
         }, 100);
     });
 
     button.on('pointerover', () => {
-        button.tint = 0x5dade2; // Hover
+        button.tint = BUTTON_TINT_HOVER; // Hover
     });
 
     button.on('pointerout', () => {
-        button.tint = 0xffffff; // Reset
+        button.tint = BUTTON_TINT_DEFAULT; // Reset
     });
 
     return button;
@@ -250,6 +253,6 @@ function updateWinTexts(wins) {
     updateText(paylineText, "");
 
     wins.forEach((win, index) => {
-        updateText(paylineText, paylineText.text + `\n${PAYLINE_TEXT} ${win.paylineId}, ${win.symbol} x${win.count}, ${win.payout}`);
+        updateText(paylineText, paylineText.text + `${PAYLINE_TEXT} ${win.paylineId}, ${win.symbol} x${win.count}, ${win.payout}`);
     });
 }

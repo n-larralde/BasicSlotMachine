@@ -1,5 +1,5 @@
 // *********************
-// ******* DATAS *******
+// ******* DATA ********
 // *********************
 
 // Slot Machine Configuration
@@ -65,12 +65,15 @@ const ERROR_LOADING_ASSETS_TEXT = "Error loading assets! Refresh to try again.";
 const BUTTON_WIDTH = 100;
 const BUTTON_HEIGHT = 50;
 const BUTTON_FILL_COLOR = "lightgray";
+const BUTTON_TINT_CLICK = 0x2980b9;
+const BUTTON_TINT_HOVER = 0x5dade2;
+const BUTTON_TINT_DEFAULT = 0xffffff;
 
 // Win Parameters
 const WIN_TEXT = "Total wins: ";
 const WIN_TEXT_COLOR = "green";
 const WIN_TEXT_FONT_SIZE = 20;
-const PAYLINE_TEXT = "- payline";
+const PAYLINE_TEXT = "\n- payline";
 
 // [3 of a kind, 4 of a kind, 5 of a kind]
 const PAYTABLE = { 
