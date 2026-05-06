@@ -13,9 +13,11 @@ document.body.appendChild(app.view);
 const container = new PIXI.Container();
 const uiContainer  = new PIXI.Container();
 const reelsContainer = new PIXI.Container();
+const buttonsContainer = new PIXI.Container();
 
 container.addChild(reelsContainer);
 container.addChild(uiContainer );
+container.addChild(buttonsContainer);
 app.stage.addChild(container);
 
 // Resize handling
@@ -30,7 +32,7 @@ const paylineText = addText("", WIN_TEXT_COLOR, WIN_TEXT_FONT_SIZE, 0, 285);
 // Assets Loading
 PIXI.Assets.addBundle("game-symbols", ASSETS);
 
-let textures = [];
+let textures = {};
 let reelsTable = [];
 
 init();
@@ -42,64 +44,62 @@ init();
 // ******* ASYNC *******
 
 async function init() {
-    textures = await PIXI.Assets.loadBundle("game-symbols", (progress) => {
-        updateText(loadingText, `Loading... ${Math.round(progress * 100)}%`);
+    try {
+        textures = await PIXI.Assets.loadBundle("game-symbols", (progress) => {
+            updateText(loadingText, LOADING_TEXT + `${Math.round(progress * 100)}%`);
+        }),
 
-        if(USE_FAKE_LOADER){
-            for(let t = 0; t < FAKE_LOADER_LOOP_COUNT; t++){
-                Math.random();
-            }
-        }
-    });
+        await new Promise(resolve => setTimeout(resolve, USE_FAKE_LOADER? FAKE_LOADER_TIMER : 0));
+    }
+    catch (e) {
+        updateText(loadingText, ERROR_LOADING_ASSETS_TEXT);
+        console.error(e);
+        return;
+    }
 
-    console.log("All Assets loaded");
+    console.log(ASSETS_LOADED_TEXT);
 
     loadingText.destroy();
 
+    initButtons();
     updateDisplayReels(SPINS);
     checkWinConditions();
 
-    console.log("Reels initialized");
+    console.log(REELS_INITIALIZED_TEXT);
 
     addText(MAIN_TITLE, MAIN_TITLE_COLOR, MAIN_TITLE_FONT_SIZE, 0, -275);
 }
 
-function delay(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
-
 // ******* SYNC *******
+
+function initButtons(){
+    for (let c = 0; c < COLS; c++) {
+        const positionX = OFFSET_X + c * REEL_SIZE + (REEL_SIZE - BUTTON_WIDTH) / 2;
+        const positionY = OFFSET_Y + ROWS * REEL_SIZE + 10;
+        const button = addButton(c, SPIN_BUTTON_TEXT, positionX, positionY);
+        buttonsContainer.addChild(button);
+    }    
+}
 
 function updateDisplayReels(positions) {
     // Reset reels
     reelsContainer.removeChildren();
     reelsTable.length = 0;
 
-    const offsetX = -(COLS * REEL_SIZE) / 2;
-    const offsetY = -(ROWS * REEL_SIZE) / 2;
-
     for (let c = 0; c < COLS; c++) {
-        const col = [];
-        let symbol = "";
         let colSymbols = [];
 
         for (let r = 0; r < ROWS; r++){
             const index = (positions[c] + r) % REELSET[c].length;
-            symbol = REELSET[c][index];
+            const symbol = REELSET[c][index]
             const sprite = new PIXI.Sprite(textures[symbol]);
             sprite.width = REEL_SIZE;
             sprite.height = REEL_SIZE;
-            sprite.x = offsetX + c * REEL_SIZE;
-            sprite.y = offsetY + r * REEL_SIZE;
+            sprite.x = OFFSET_X + c * REEL_SIZE;
+            sprite.y = OFFSET_Y + r * REEL_SIZE;
             reelsContainer.addChild(sprite);
-            col.push(sprite);
             colSymbols.push(symbol);
         }
-
-        const positionX = offsetX + c * REEL_SIZE + (REEL_SIZE - SPIN_BUTTON_WIDTH) / 2;
-        const positionY = offsetY + ROWS * REEL_SIZE + 10;
-        const button = addButton(c, SPIN_BUTTON_TEXT, positionX, positionY);
-        reelsContainer.addChild(button);
 
         reelsTable.push(colSymbols);
     }
@@ -115,16 +115,16 @@ function resize() {
 
     container.scale.set(scale);
 
-    console.log("Screen resized:", app.screen.width, app.screen.height);
+    console.log(SCREEN_RESIZED_TEXT, app.screen.width, app.screen.height);
 }
 
-function addText(text, color, fontSize, positionX, positionY) {
+function addText(text, color, fontSize, positionX, positionY, centered = true) {
     const pixiText = new PIXI.Text(text, {
         fill: color,
         fontSize: fontSize
     });
 
-    pixiText.x = positionX == 0 ? -pixiText.width / 2 : positionX;
+    pixiText.x = centered ? -pixiText.width / 2 : positionX;
     pixiText.y = positionY;
     uiContainer.addChild(pixiText);
     
@@ -138,8 +138,8 @@ function updateText(pixiText, newText) {
 
 function addButton(columnIndex, text, positionX = 0, positionY = 0) {
     const button = new PIXI.Graphics();
-    button.beginFill(SPIN_BUTTON_FILL_COLOR);
-    button.drawRoundedRect(0, 0, SPIN_BUTTON_WIDTH, SPIN_BUTTON_HEIGHT, 10);
+    button.beginFill(BUTTON_FILL_COLOR);
+    button.drawRoundedRect(0, 0, BUTTON_WIDTH, BUTTON_HEIGHT, 10);
     button.endFill();
 
     button.x = positionX;
@@ -154,8 +154,8 @@ function addButton(columnIndex, text, positionX = 0, positionY = 0) {
     });
 
     genericText.anchor.set(0.5);
-    genericText.x = SPIN_BUTTON_WIDTH / 2;
-    genericText.y = SPIN_BUTTON_HEIGHT / 2;
+    genericText.x = BUTTON_WIDTH / 2;
+    genericText.y = BUTTON_HEIGHT / 2;
 
     button.addChild(genericText);
 
@@ -187,10 +187,6 @@ function randomInt(min, max) {
 
 function checkWinConditions(){
     const wins = checkAllPaylines();
-    if(wins.length > 0){
-        console.log("Wins:", wins);
-    }
-
     updateWinTexts(wins);
 }
 
@@ -203,7 +199,7 @@ function randomizeReels(columnIndex) {
 function checkAllPaylines() {
     const wins = [];
     
-    for (const [paylineId, pattern] of Object.entries(PAYCOMBINATIONS )) {
+    for (const [paylineId, pattern] of Object.entries(PAYCOMBINATIONS)) {
         const symbols = [];
         
         for (let col = 0; col < COLS; col++) {
@@ -216,7 +212,7 @@ function checkAllPaylines() {
             wins.push(win);
         }
     }
-    
+
     return wins;
 }
 
@@ -240,8 +236,7 @@ function checkWinCombination(symbols, paylineId) {
             paylineId: parseInt(paylineId),
             symbol: symbol,
             count: count,
-            payout: payout,
-            positions: symbols.slice(0, count)
+            payout: payout
         };
     }
     
@@ -251,11 +246,10 @@ function checkWinCombination(symbols, paylineId) {
 function updateWinTexts(wins) {
     const totalPayout = wins.reduce((total, win) => total + win.payout, 0);
 
-    updateText(winText, `Total wins: ${totalPayout}`);
-
+    updateText(winText, `${WIN_TEXT}${totalPayout}`);
     updateText(paylineText, "");
 
     wins.forEach((win, index) => {
-        updateText(paylineText, paylineText.text + `\n- payline ${win.paylineId}, ${win.symbol} x${win.count}, ${win.payout}`);
+        updateText(paylineText, paylineText.text + `\n${PAYLINE_TEXT} ${win.paylineId}, ${win.symbol} x${win.count}, ${win.payout}`);
     });
 }
