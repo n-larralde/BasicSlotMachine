@@ -11,12 +11,12 @@ document.body.appendChild(app.view);
 
 // Containers
 const container = new PIXI.Container();
-const uiContainer  = new PIXI.Container();
+const uiContainer = new PIXI.Container();
 const reelsContainer = new PIXI.Container();
 const buttonsContainer = new PIXI.Container();
 
 container.addChild(reelsContainer);
-container.addChild(uiContainer );
+container.addChild(uiContainer);
 container.addChild(buttonsContainer);
 app.stage.addChild(container);
 
@@ -57,20 +57,20 @@ async function init() {
         return;
     }
 
-    console.log(ASSETS_LOADED_TEXT);
+    if (DEBUG) console.log(ASSETS_LOADED_TEXT);
 
     loadingText.destroy();
 
-    winText = addText("", WIN_TEXT_COLOR, WIN_TEXT_FONT_SIZE, 0, 275);
-    paylineText = addText("", WIN_TEXT_COLOR, WIN_TEXT_FONT_SIZE, 0, 285);
+    winText = addText("", WIN_TEXT_COLOR, WIN_TEXT_FONT_SIZE, 0, 285);
+    paylineText = addText("", WIN_TEXT_COLOR, WIN_TEXT_FONT_SIZE, 0, 290);
 
     initButtons();
     updateDisplayReels(SPINS);
     checkWinConditions();
 
-    console.log(REELS_INITIALIZED_TEXT);
+    if (DEBUG) console.log(REELS_INITIALIZED_TEXT);
 
-    addText(MAIN_TITLE, MAIN_TITLE_COLOR, MAIN_TITLE_FONT_SIZE, 0, -275);
+    addText(MAIN_TITLE, MAIN_TITLE_COLOR, MAIN_TITLE_FONT_SIZE, 0, -250);
 }
 
 // ******* SYNC *******
@@ -79,7 +79,7 @@ function initButtons(){
     for (let c = 0; c < COLS; c++) {
         const positionX = OFFSET_X + c * REEL_SIZE + (REEL_SIZE - BUTTON_WIDTH) / 2;
         const positionY = OFFSET_Y + ROWS * REEL_SIZE + 10;
-        const button = addButton(c, SPIN_BUTTON_TEXT, positionX, positionY);
+        const button = addButton(c, positionX, positionY);
         buttonsContainer.addChild(button);
     }    
 }
@@ -90,11 +90,11 @@ function updateDisplayReels(positions) {
     reelsTable.length = 0;
 
     for (let c = 0; c < COLS; c++) {
-        let colSymbols = [];
+        const colSymbols = [];
 
         for (let r = 0; r < ROWS; r++){
             const index = (positions[c] + r) % REELSET[c].length;
-            const symbol = REELSET[c][index]
+            const symbol = REELSET[c][index];
             const sprite = new PIXI.Sprite(textures[symbol]);
             sprite.width = REEL_SIZE;
             sprite.height = REEL_SIZE;
@@ -118,7 +118,7 @@ function resize() {
 
     container.scale.set(scale);
 
-    console.log(SCREEN_RESIZED_TEXT, app.screen.width, app.screen.height);
+    if (DEBUG) console.log(SCREEN_RESIZED_TEXT, app.screen.width, app.screen.height);
 }
 
 function addText(text, color, fontSize, positionX, positionY, centered = true) {
@@ -139,46 +139,20 @@ function updateText(pixiText, newText) {
     pixiText.x = -pixiText.width / 2;
 }
 
-function addButton(columnIndex, text, positionX = 0, positionY = 0) {
-    const button = new PIXI.Graphics();
-    button.beginFill(BUTTON_FILL_COLOR);
-    button.drawRoundedRect(0, 0, BUTTON_WIDTH, BUTTON_HEIGHT, 10);
-    button.endFill();
-
+function addButton(columnIndex, positionX = 0, positionY = 0) {
+    const button = new PIXI.Sprite(textures["spin_button"]);
+    button.width = BUTTON_WIDTH;
+    button.height = BUTTON_HEIGHT;
     button.x = positionX;
     button.y = positionY;
 
     button.eventMode = 'static';
     button.cursor = 'pointer';
 
-    const genericText = new PIXI.Text(text, {
-        fontSize: SPIN_BUTTON_TEXT_FONT_SIZE,
-        fill: SPIN_BUTTON_TEXT_COLOR
-    });
-
-    genericText.anchor.set(0.5);
-    genericText.x = BUTTON_WIDTH / 2;
-    genericText.y = BUTTON_HEIGHT / 2;
-
-    button.addChild(genericText);
-
     // Events
     button.on('pointerdown', () => {
-        button.tint = BUTTON_TINT_CLICK; // Visual feedback for click
         randomizeReels(columnIndex);
         checkWinConditions();
-
-        setTimeout(() => {
-            button.tint = BUTTON_TINT_DEFAULT; // Reset after click
-        }, 100);
-    });
-
-    button.on('pointerover', () => {
-        button.tint = BUTTON_TINT_HOVER; // Hover
-    });
-
-    button.on('pointerout', () => {
-        button.tint = BUTTON_TINT_DEFAULT; // Reset
     });
 
     return button;

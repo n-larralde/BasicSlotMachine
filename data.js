@@ -1,6 +1,7 @@
 // *********************
 // ******* DATA ********
 // *********************
+const DEBUG = false; // Set to true to enable debug logs and fake loader timeout
 
 // Slot Machine Configuration
 const COLS = 5;
@@ -39,8 +40,8 @@ const REELSET = [
     ["lv3", "lv4", "hv2", "hv3", "hv4", "hv1", "hv3", "hv2", "hv2", "hv4", "hv4", "hv2", "lv2", "hv4", "hv1", "lv2", "hv1", "lv2", "hv4", "lv4"]
 ];
 
-// Loading fake loop count (to simulate loading time)
-const USE_FAKE_LOADER = true;
+// Loading fake loop count (to simulate loading time after assets are loaded))
+const USE_FAKE_LOADER = DEBUG;
 const FAKE_LOADER_TIMER = 1000;
 
 // Texts
@@ -52,22 +53,14 @@ const LOADING_TEXT = "Loading...";
 const LOADING_TEXT_COLOR = "black";
 const LOADING_TEXT_FONT_SIZE = 40;  
 
-const SPIN_BUTTON_TEXT = "Spin";
-const SPIN_BUTTON_TEXT_COLOR = "black";
-const SPIN_BUTTON_TEXT_FONT_SIZE = 20;
-
 const ASSETS_LOADED_TEXT = "All Assets loaded";
 const REELS_INITIALIZED_TEXT = "Reels initialized";
 const SCREEN_RESIZED_TEXT = "Screen resized:";
 const ERROR_LOADING_ASSETS_TEXT = "Error loading assets! Refresh to try again.";
 
 // Buttons
-const BUTTON_WIDTH = 100;
-const BUTTON_HEIGHT = 50;
-const BUTTON_FILL_COLOR = "lightgray";
-const BUTTON_TINT_CLICK = 0x2980b9;
-const BUTTON_TINT_HOVER = 0x5dade2;
-const BUTTON_TINT_DEFAULT = 0xffffff;
+const BUTTON_WIDTH = 75;
+const BUTTON_HEIGHT = 75;
 
 // Win Parameters
 const WIN_TEXT = "Total wins: ";
