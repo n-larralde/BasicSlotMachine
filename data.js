@@ -1,6 +1,13 @@
 // *********************
 // ******* DATA ********
 // *********************
+
+// Spins = CHANGE VALUES HERE to test win conditions directly
+let SPINS = [0, 0, 0, 0, 0]; // Initial spins positions
+
+const RUNT_UNIT_TESTS = false; // Set to true to run unit tests on win conditions
+
+// Debug
 const DEBUG = false; // Set to true to enable debug logs and fake loader timeout
 
 // Slot Machine Configuration
@@ -14,9 +21,6 @@ const OFFSET_Y = -(ROWS * REEL_SIZE) / 2;
 // Screen
 const DESIGN_WIDTH = 800;
 const DESIGN_HEIGHT = 800;
-
-// Spins = CHANGE VALUES HERE TO TEST DIRECTLY THE WIN CONDITIONS
-let SPINS = [5, 14, 9, 9, 16]; // Initial spins (can be randomized)
 
 // Assets URLs
 const ASSETS = Object.freeze({
@@ -80,6 +84,7 @@ const PAYTABLE = {
     lv4: [1, 2, 3]
 };
 
+// Paylines combinations (using the index of the symbols in the reels)
 const PAYCOMBINATIONS = {
     1: [1, 1, 1, 1, 1],
     2: [0, 0, 0, 0, 0],

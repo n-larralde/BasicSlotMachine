@@ -68,6 +68,12 @@ async function init() {
     updateDisplayReels(SPINS);
     checkWinConditions();
 
+    if (RUNT_UNIT_TESTS) {
+        const script = document.createElement("script");
+        script.src = "test.js";
+        document.body.appendChild(script);
+    }
+
     if (DEBUG) console.log(REELS_INITIALIZED_TEXT);
 
     addText(MAIN_TITLE, MAIN_TITLE_COLOR, MAIN_TITLE_FONT_SIZE, 0, -250);
@@ -76,12 +82,30 @@ async function init() {
 // ******* SYNC *******
 
 function initButtons(){
-    for (let c = 0; c < COLS; c++) {
-        const positionX = OFFSET_X + c * REEL_SIZE + (REEL_SIZE - BUTTON_WIDTH) / 2;
-        const positionY = OFFSET_Y + ROWS * REEL_SIZE + 10;
-        const button = addButton(c, positionX, positionY);
-        buttonsContainer.addChild(button);
-    }    
+    const positionX = 0;
+    const positionY = OFFSET_Y + ROWS * REEL_SIZE + BUTTON_HEIGHT / 2 + 10;
+    const button = addButton(positionX, positionY);
+    buttonsContainer.addChild(button);
+}
+
+function addButton(positionX = 0, positionY = 0) {
+    const button = new PIXI.Sprite(textures["spin_button"]);
+    button.anchor.set(0.5);
+    button.width = BUTTON_WIDTH;
+    button.height = BUTTON_HEIGHT;
+    button.x = positionX;
+    button.y = positionY;
+
+    button.eventMode = 'static';
+    button.cursor = 'pointer';
+
+    // Events
+    button.on('pointerdown', () => {
+        randomizeAllReels();
+        checkWinConditions();
+    });
+
+    return button;
 }
 
 function updateDisplayReels(positions) {
@@ -139,25 +163,6 @@ function updateText(pixiText, newText) {
     pixiText.x = -pixiText.width / 2;
 }
 
-function addButton(columnIndex, positionX = 0, positionY = 0) {
-    const button = new PIXI.Sprite(textures["spin_button"]);
-    button.width = BUTTON_WIDTH;
-    button.height = BUTTON_HEIGHT;
-    button.x = positionX;
-    button.y = positionY;
-
-    button.eventMode = 'static';
-    button.cursor = 'pointer';
-
-    // Events
-    button.on('pointerdown', () => {
-        randomizeReels(columnIndex);
-        checkWinConditions();
-    });
-
-    return button;
-}
-
 function randomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
@@ -167,9 +172,10 @@ function checkWinConditions(){
     updateWinTexts(wins);
 }
 
-function randomizeReels(columnIndex) {
-    const newIndex = randomInt(0, REELSET[columnIndex].length - 1);
-    SPINS[columnIndex] = newIndex;
+function randomizeAllReels() {
+    for (let c = 0; c < COLS; c++) {
+        SPINS[c] = randomInt(0, REELSET[c].length - 1);
+    }
     updateDisplayReels(SPINS);
 }
 
@@ -229,4 +235,14 @@ function updateWinTexts(wins) {
     wins.forEach((win, index) => {
         updateText(paylineText, paylineText.text + `${PAYLINE_TEXT} ${win.paylineId}, ${win.symbol} x${win.count}, ${win.payout}`);
     });
+
+    // Scale to fit available space
+    const availableHeight = (DESIGN_HEIGHT / 2) - paylineText.y;
+    if (paylineText.height > availableHeight) {
+        const scale = availableHeight / paylineText.height;
+        paylineText.scale.set(scale);
+    }
+    else {
+        paylineText.scale.set(1);
+    }
 }
